@@ -1,6 +1,8 @@
 
 # Simple Audio And Settings
 A simple way to manage Audio and Settings in your Unity Game
+![alt text](https://github.com/potatokiller234/SimpleAudioAndSettings/blob/main/image.png?raw=true)
+
 ## How to Install
 
 Download SimpleAudioAndSettings.zip in the release section.
