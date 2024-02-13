@@ -1,7 +1,7 @@
 
 # Simple Audio And Settings
 A simple way to manage Audio and Settings in your Unity Game
-![alt text](https://github.com/potatokiller234/SimpleAudioAndSettings/blob/main/image.png?raw=true)
+![Alt text](relative%20path/to/img.png?raw=true "ImageForReadMe")
 
 ## How to Install
 
