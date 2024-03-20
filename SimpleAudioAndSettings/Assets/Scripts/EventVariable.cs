@@ -5,10 +5,12 @@ namespace SimpleAudioAndSettings
     {
         private T value;
         public event System.EventHandler OnValueChange;
+        public SimpleAudioType type;
 
-        public EventVariable(T value)
+        public EventVariable(T value, SimpleAudioType type)
         {
             this.value = value;
+            this.type = type;
         }
         public T GetValue()
         {

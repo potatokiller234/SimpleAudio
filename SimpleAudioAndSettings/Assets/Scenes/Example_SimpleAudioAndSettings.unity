@@ -424,7 +424,7 @@ MonoBehaviour:
     audioSource: {fileID: 1392569799}
     audioClips:
     - {fileID: 8300000, guid: a28492aea7ea95947884bb5a11c2299b, type: 3}
-    audioType: 3
+    audioType: 4
     replayAudioOnPlay: 0
     updateVolumeOnMasterChange: 1
   slider: {fileID: 1986780359}
@@ -745,7 +745,7 @@ MonoBehaviour:
     audioSource: {fileID: 356913533}
     audioClips:
     - {fileID: 8300000, guid: 4524719e7734a4d4c920d28c9cbbc01e, type: 3}
-    audioType: 0
+    audioType: 1
     replayAudioOnPlay: 0
     updateVolumeOnMasterChange: 1
   slider: {fileID: 1417289275}
@@ -1723,6 +1723,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6326507040ceabe47abbde29d1020469, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioTypes: 
+  defaultVolumeLevel: 0.5
 --- !u!4 &560265070
 Transform:
   m_ObjectHideFlags: 0
@@ -2302,7 +2304,7 @@ MonoBehaviour:
     audioSource: {fileID: 973113288}
     audioClips:
     - {fileID: 8300000, guid: 471036ff0c53f3a4e9567a996ebe9c74, type: 3}
-    audioType: 2
+    audioType: 3
     replayAudioOnPlay: 0
     updateVolumeOnMasterChange: 1
   slider: {fileID: 1734178881}
@@ -6467,7 +6469,7 @@ MonoBehaviour:
     audioSource: {fileID: 354756635}
     audioClips:
     - {fileID: 8300000, guid: ca171ad5be66bfd41a96df3ceb6ee7ec, type: 3}
-    audioType: 1
+    audioType: 2
     replayAudioOnPlay: 0
     updateVolumeOnMasterChange: 1
   slider: {fileID: 1439428012}

@@ -6,55 +6,70 @@ namespace SimpleAudioAndSettings
     public class AudioSourceManager
     {
         AudioData audioData;
+        readonly EventVariable<float> masterVolume;
         public AudioSourceManager(AudioData data)
         {
             audioData = data;
-            //This will update the AudioSource volume on volume change
-            if (audioData.updateVolumeOnMasterChange == true)
+
+            //Get masterVolume ref
+            for (int i = 0; i < GlobalSettings.globalSettings.allVolumes.Count; i++)
             {
-                switch (audioData.audioType)
+                if (SimpleAudioType.MASTER == GlobalSettings.globalSettings.allVolumes[i].type)
                 {
-                    case AudioType.MUSIC:
-                        GlobalSettings.globalSettings.musicVolume.OnValueChange += EventUpdateVolume;
-                        break;
-                    case AudioType.SFX:
-                        GlobalSettings.globalSettings.SFXVolume.OnValueChange += EventUpdateVolume;
-                        break;
-                    case AudioType.VOICE:
-                        GlobalSettings.globalSettings.voiceVolume.OnValueChange += EventUpdateVolume;
-                        break;
-                    case AudioType.DEFAULT:
-                        break;
-                    default:
-                        Debug.LogError("Unknown AudioType " + audioData.audioType);
-                        break;
+                    masterVolume = GlobalSettings.globalSettings.allVolumes[i];
+                    break;
                 }
-                GlobalSettings.globalSettings.masterVolume.OnValueChange += EventUpdateVolume;
-                UpdateVolume();
             }
+
+            //Return if volume should not change onMasterVolimeChange
+            if (audioData.updateVolumeOnMasterChange == false)
+                return;
+            //If this audio is a master then update on master change
+            if (SimpleAudioType.MASTER == audioData.audioType)
+            {
+                masterVolume.OnValueChange += EventUpdateVolume;
+            }
+            else
+            {
+                //Add the event listeners to update volume OnValueChange
+                for (int i = 0; i < GlobalSettings.globalSettings.allVolumes.Count; i++)
+                {
+                    if (audioData.audioType == GlobalSettings.globalSettings.allVolumes[i].type)
+                    {
+                        GlobalSettings.globalSettings.allVolumes[i].OnValueChange += EventUpdateVolume;
+                        break;
+                    }
+                }
+                masterVolume.OnValueChange += EventUpdateVolume;
+            }
+            //Updates the volume off rip
+            UpdateVolume();
+            return;
+
         }
+        //Removes all EventUpdateVolume
         ~AudioSourceManager()
         {
             if (audioData.updateVolumeOnMasterChange == true)
             {
-                switch (audioData.audioType)
+                if (SimpleAudioType.MASTER == audioData.audioType)
                 {
-                    case AudioType.MUSIC:
-                        GlobalSettings.globalSettings.musicVolume.OnValueChange -= EventUpdateVolume;
-                        break;
-                    case AudioType.SFX:
-                        GlobalSettings.globalSettings.SFXVolume.OnValueChange -= EventUpdateVolume;
-                        break;
-                    case AudioType.VOICE:
-                        GlobalSettings.globalSettings.voiceVolume.OnValueChange -= EventUpdateVolume;
-                        break;
-                    case AudioType.DEFAULT:
-                        break;
-                    default:
-                        Debug.LogError("Unknown AudioType " + audioData.audioType);
-                        break;
+                    masterVolume.OnValueChange -= EventUpdateVolume;
+                    return;
                 }
-                GlobalSettings.globalSettings.masterVolume.OnValueChange += EventUpdateVolume;
+                else
+                {
+                    //Add the event listeners to update volume OnValueChange
+                    for (int i = 0; i < GlobalSettings.globalSettings.allVolumes.Count; i++)
+                    {
+                        if (audioData.audioType == GlobalSettings.globalSettings.allVolumes[i].type)
+                        {
+                            GlobalSettings.globalSettings.allVolumes[i].OnValueChange -= EventUpdateVolume;
+                            break;
+                        }
+                    }
+                    masterVolume.OnValueChange -= EventUpdateVolume;
+                }
             }
         }
         /// <summary>
@@ -149,7 +164,7 @@ namespace SimpleAudioAndSettings
         {
             return audioData.audioSource.volume;
         }
-        public AudioType GetAudioType()
+        public SimpleAudioType GetAudioType()
         {
             return audioData.audioType;
         }
@@ -167,23 +182,20 @@ namespace SimpleAudioAndSettings
         }
         private void UpdateVolume()
         {
-            switch (audioData.audioType)
+            //If master update based on master volume
+            if (audioData.audioType == SimpleAudioType.MASTER)
             {
-                case AudioType.MUSIC:
-                    audioData.audioSource.volume = (GlobalSettings.globalSettings.musicVolume.GetValue() * GlobalSettings.globalSettings.masterVolume.GetValue());
-                    break;
-                case AudioType.SFX:
-                    audioData.audioSource.volume = (GlobalSettings.globalSettings.SFXVolume.GetValue() * GlobalSettings.globalSettings.masterVolume.GetValue());
-                    break;
-                case AudioType.VOICE:
-                    audioData.audioSource.volume = (GlobalSettings.globalSettings.voiceVolume.GetValue() * GlobalSettings.globalSettings.masterVolume.GetValue());
-                    break;
-                case AudioType.DEFAULT:
-                    audioData.audioSource.volume = (GlobalSettings.globalSettings.masterVolume.GetValue());
-                    break;
-                default:
-                    Debug.LogError("Unknown AudioType " + audioData.audioType);
-                    break;
+                audioData.audioSource.volume = masterVolume.GetValue();
+                return;
+            }
+            //Else try the other volume types
+            for (int i = 0; i < GlobalSettings.globalSettings.allVolumes.Count; i++)
+            { 
+                if (audioData.audioType == GlobalSettings.globalSettings.allVolumes[i].type)
+                {
+                    audioData.audioSource.volume = GlobalSettings.globalSettings.allVolumes[i].GetValue() * masterVolume.GetValue();
+                    return;
+                }
             }
         }
         private void EventUpdateVolume(object sender, System.EventArgs e)
@@ -193,16 +205,6 @@ namespace SimpleAudioAndSettings
     }
 
     /// <summary>
-    /// Types of Audio
-    /// </summary>
-    public enum AudioType
-    {
-        DEFAULT,
-        MUSIC,
-        SFX,
-        VOICE
-    }
-    /// <summary>
     /// DataStructure used to store AudioData information
     /// </summary>
     [System.Serializable]
@@ -210,7 +212,7 @@ namespace SimpleAudioAndSettings
     {
         public AudioSource audioSource;
         public AudioClip[] audioClips;
-        public AudioType audioType;
+        public SimpleAudioType audioType;
         public bool replayAudioOnPlay;//If true will replay audio even if audio is playing
         public bool updateVolumeOnMasterChange;//If true when volume in global settings is changed this volume will be updated also
     }
