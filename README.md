@@ -9,6 +9,7 @@ A simple way to manage Audio and Settings in your Unity Game
 - Four pre-defined audio categories.
 - Singleton volume controls for all AudioSources.
 - Full of Congratulations and Yipees.
+- Ability to add new Volume profiles by editing the Enum in the C# file named EnumHolder
   
 ## How to Install
 
